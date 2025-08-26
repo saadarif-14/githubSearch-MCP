@@ -6,25 +6,44 @@ from contextlib import AsyncExitStack
 
 from mcp_client import MCPClient
 from core.claude import Claude
+from core.openai_provider import OpenAIProvider
 
 from core.cli_chat import CliChat
 from core.cli import CliApp
 
 load_dotenv()
 
+# Provider selection
+provider = os.getenv("PROVIDER", "openai").lower()
+
 # Anthropic Config
-claude_model = os.getenv("CLAUDE_MODEL", "")
-anthropic_api_key = os.getenv("ANTHROPIC_API_KEY", "")
+# claude_model = os.getenv("CLAUDE_MODEL", "")
+# anthropic_api_key = os.getenv("ANTHROPIC_API_KEY", "")
+
+# OpenAI Config
+openai_model = os.getenv("OPENAI_MODEL", "")
+openai_api_key = os.getenv("OPENAI_API_KEY", "")
 
 
-assert claude_model, "Error: CLAUDE_MODEL cannot be empty. Update .env"
-assert anthropic_api_key, (
-    "Error: ANTHROPIC_API_KEY cannot be empty. Update .env"
-)
+if provider == "claude":
+    assert claude_model, "Error: CLAUDE_MODEL cannot be empty. Update .env"
+    assert anthropic_api_key, (
+        "Error: ANTHROPIC_API_KEY cannot be empty. Update .env"
+    )
+elif provider == "openai":
+    assert openai_model, "Error: OPENAI_MODEL cannot be empty. Update .env"
+    assert openai_api_key, (
+        "Error: OPENAI_API_KEY cannot be empty. Update .env"
+    )
+else:
+    raise AssertionError("Error: PROVIDER must be 'claude' or 'openai'")
 
 
 async def main():
-    claude_service = Claude(model=claude_model)
+    if provider == "claude":
+        model_service = Claude(model=claude_model)
+    else:
+        model_service = OpenAIProvider(model=openai_model)
 
     server_scripts = sys.argv[1:]
     clients = {}
@@ -51,7 +70,7 @@ async def main():
         chat = CliChat(
             doc_client=doc_client,
             clients=clients,
-            claude_service=claude_service,
+            claude_service=model_service,
         )
 
         cli = CliApp(chat)

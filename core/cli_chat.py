@@ -3,6 +3,8 @@ from mcp.types import Prompt, PromptMessage
 from anthropic.types import MessageParam
 
 from core.chat import Chat
+from typing import Any
+
 from core.claude import Claude
 from mcp_client import MCPClient
 
@@ -12,7 +14,7 @@ class CliChat(Chat):
         self,
         doc_client: MCPClient,
         clients: dict[str, MCPClient],
-        claude_service: Claude,
+        claude_service: Any,
     ):
         super().__init__(clients=clients, claude_service=claude_service)
 

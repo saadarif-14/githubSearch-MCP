@@ -13,7 +13,31 @@ docs = {
 }
 
 # TODO: Write a tool to read a doc
+@mcp.tool(
+    name="read_doc",
+    description="Read a content of a document and return it as a string.",
+)
+def read_doc(doc_name: str) -> str: 
+    """Read a document from the file system."""
+    doc = docs.get(doc_name)
+    if not doc:
+        raise Exception(f"Document '{doc_name}' not found")
+    return doc
+
+
 # TODO: Write a tool to edit a doc
+@mcp.tool(
+    name="edit_doc",
+    description="Edit a document by replacing a string in the documents content with a new string.",
+)
+def edit_doc(doc_name: str, old_string: str, new_string: str) -> str:
+    """Edit a document by replacing a string in the documents content with a new string."""
+    doc = docs.get(doc_name) 
+    if not doc:
+        raise Exception(f"Document '{doc_name}' not found")
+    return doc.replace(old_string, new_string)
+
+
 # TODO: Write a resource to return all doc id's
 # TODO: Write a resource to return the contents of a particular doc
 # TODO: Write a prompt to rewrite a doc in markdown format
